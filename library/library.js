@@ -39,8 +39,12 @@ function addBookToLibrary(book) { // add functionality to the add book button
 }
 
 function getform() {
+    
     const dialog = document.getElementsByClassName('custom-dialog')[0];
-    dialog.classList.add('hidden');
+    if (dialog) {
+        dialog.remove();
+    }
+    //dialog.classList.add('hidden');
     console.log('in get form');
     const form = document.createElement('form');
     form.classList.add('book-form');
@@ -89,12 +93,33 @@ function getform() {
 
     // 4. Submit Button
     const submitButton = document.createElement("button"); // Create the submit button
-    submitButton.type = "submit";
+    submitButton.setAttribute('type', 'submit');
     submitButton.textContent = "Submit";
+    submitButton.setAttribute('value', 'Submit Form');
+    submitButton.id = "submit-id";
     form.appendChild(submitButton);
+ 
 
     const container = document.getElementById("card-container"); // Or your dialog element
-    container.appendChild(form); // Or dialog.appendChild(form)
+    container.appendChild(form); 
+    console.log("right before event listener");
+    // Add submit event listener
+    form.addEventListener('submit', function(event) {
+        console.log("CLICKED SUBMIT");
+        event.preventDefault(); // Prevent page reload
+
+        // Get values from inputs
+        const title = form.querySelector('#bookTitle').value;
+        const author = form.querySelector('#bookAuthor').value;
+        const pages = form.querySelector('#bookPages').value;
+
+        // Create new Book constructor and add to library
+        const newBook = new Book(title, author, pages);
+        addBookToLibrary(newBook);
+
+        // Optionally, remove the form after submission
+        form.remove();
+    });
     return form; // Return the created form element if you need to reference it later
 }
 
@@ -106,13 +131,10 @@ function cancleButton(){ //add functionality to cancle button
     displayBook();
     //call displayBook to show the current library
 }
-function displayBook(book) {
-
-} /*{ loop throguh array and displays each book on the page 
+function displayBook(book) { //loop throguh array and displays each book on the page 
     //console.log("in displayBook function");
     // render the html 
-    /*const card = document.getElementById("card-container");
-    console.log(card);
+    const card = document.getElementById("card-container");
     const individual = document.createElement('div');
     individual.classList.add('cards');
     card.append(individual);
@@ -131,14 +153,12 @@ function displayBook(book) {
         bookCard.append(pg);
         //append info to the card container
         individual.append(bookCard);
-
         return `${book.title} , ${book.author}, ${book.pages}, ${book.id}`; 
-
     }
+    getform();
 
 }
-*/
-// ok now how do i cal this all??? 
+
 //var book = new Book("Sunrise on the Reaping", "Suzanne Collins", "700", crypto.randomUUID());
 //var book1 = new Book("Twilight", "Sephanie Meyer", "950", crypto.randomUUID());
 //addBookToLibrary(book);
