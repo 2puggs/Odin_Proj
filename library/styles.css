@@ -1,11 +1,12 @@
 #card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     background-color:pink;
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 16px;
     margin: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 200px;
 }
 
 .cards {
@@ -13,4 +14,35 @@
     border-radius: 6px;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
 
+}
+
+.custom-dialog {
+    border: none; /* Remove default dialog border */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    /* Centering the dialog in the viewport */
+    margin: auto; /* Centers horizontally and vertically (when dialog.showModal() is used) */
+    position: fixed; /* Keep it in the viewport */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Fine-tuning for perfect centering */
+    max-width: 90vw; /* Limit max width to prevent it from being too wide */
+    max-height: 90vh; /* Limit max height */
+    overflow: auto; /* Add scrollbars if content exceeds max-height */
+}
+
+.custom-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.hidden {
+    display: none;
 }
