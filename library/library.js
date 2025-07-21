@@ -32,6 +32,9 @@ function getDialog(){
     const container = document.getElementById("card-container");
     container.append(dialog);
     dialog.showModal();
+
+    const addBook = document.getElementById('add-book');
+    addBook.addEventListener('click', getform);
 }
 function addBookToLibrary(book) { // add functionality to the add book button
     myLibrary.push(book);
@@ -125,7 +128,7 @@ function getform() {
 
 function cancleButton(){ //add functionality to cancle button
     const myDialog = document.querySelector('dialog');
-    myDialog.classList.add('hidden');
+    //myDialog.classList.add('hidden');
     console.log(myDialog);
     myDialog.close();
     displayBook();
@@ -139,7 +142,7 @@ function displayBook(book) { //loop throguh array and displays each book on the 
     individual.classList.add('cards');
     card.append(individual);
     //console.log(book);
-    for (b in book) { // populate the card !!! 
+    for (b in myLibrary) { // populate the card !!! 
         const bookCard = document.createElement('div');
         bookCard.id = book.title;
         const tit = document.createElement('h3');
@@ -153,10 +156,17 @@ function displayBook(book) { //loop throguh array and displays each book on the 
         bookCard.append(pg);
         //append info to the card container
         individual.append(bookCard);
-        return `${book.title} , ${book.author}, ${book.pages}, ${book.id}`; 
     }
-    getform();
+    // button to call dialog
+    console.log("homw button");
+    const home = document.createElement('button');
+    home.textContent = "Home";
+    home.id = "go-home";
+    document.body.append(home);
 
+    const goHome = document.getElementById('go-home');
+    goHome.addEventListener('click', getDialog);
+    return `${book.title} , ${book.author}, ${book.pages}, ${book.id}`; 
 }
 
 //var book = new Book("Sunrise on the Reaping", "Suzanne Collins", "700", crypto.randomUUID());
@@ -168,5 +178,5 @@ getDialog(); //call function
 const closeButton = document.getElementById('cancle');
 closeButton.addEventListener('click', cancleButton);
 
-const addBook = document.getElementById('add-book');
-addBook.addEventListener('click', getform);
+//const goHome = document.getElementById('go-home');
+//goHome.addEventListener('click', getDialog);
