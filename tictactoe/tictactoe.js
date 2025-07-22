@@ -1,50 +1,52 @@
-/*
- 1 | 2 | 3 => (0,0) | (0,1) | (0,2) 
- ---------
- 4 | 5 | 6 => (1,0) | (1,1) | (1,2)
- ---------
- 7 | 8 | 9 => (2,0) | (2,1) | (2,2)
-*/
-  // Create a 2d array that will represent the state of the game board
-  // this is just rendering the board 
- 
 function Gameboard() {
-    const rows = 3;
-    const squares = 3;
-    const board = [];
+  const rows = 3;
+  const squares = 3;
+  const board = [];
 
-    let count = 1;
-    for (let i = 0; i < rows; i++) {
-        board[i] = [];
-        for (let j = 0; j < squares; j++) {
-            board[i].push(count);
-            count++; 
-        }
-    }
-    console.log(board);
-    // This will be the method of getting the entire board that our UI will eventually need to render it.
-    const getBoard = () => board;
 
-    const isValid = 1; // this will eventually be used to determine if the player who delcared to play this space is a valid square
-  // This method will be used to print our board to the console after each player takes their turn
-    const printBoard = () => {
-        const boardWithCellValues = board.map(row => {row.map(value => { console.log(value); // Prints each individual value
-        });
-    });
-    console.log(boardWithCellValues);
-    };
+  for (let i = 0; i < rows; i++) {
+      board[i] = [];
+      for (let j = 0; j < squares; j++) {
+          board[i].push(Cell());
+          
+      }
+  }
+  console.log("func Gameboard()");
+  console.log(board);
 
-  // Here, we provide an interface for the rest of our
-  // application to interact with the board
-    return { getBoard, printBoard };
+  const printBoard = () => {
+      const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue())) // gets the cell's value 
+      console.log(boardWithCellValues);
+  };
+
+  const isValid = (square, player) => {
+      //what is the logic to check if the value is 0? at square provided? 
+      console.log(`sqaure validation: ${square} `); // checks if the passed value matches game.playRound(sqaure);
+      for (let i=0; i < rows; i++){
+          for (let j=0; j < squares; j++) {
+              if (board[i][j] == 'X' || board[i][j] == 'O') {
+                  return false;
+              }
+          }
+
+      }
+      return true;
+  }; // end is valid;
+
+  const dropToken = (square,player) => {
+      let count = 0;
+      for (let i=0; i < rows; i++){
+          for (let j=0; j < squares; j++) {
+              if (count == square) {
+                  //change the token value out
+                  board[i][j].addToken(player); 
+              }
+              count++;
+          }
+      }// end outer for 
+  };
+  return {printBoard, isValid, dropToken};
 }
-
-/*
-** A Cell represents one "square" on the board and can have one of
-** 0: no token is in the square,
-** 1: Player 1's token,
-** 2: Player 2's token
-*/
 
 function Cell() {
   let value = 0;
@@ -63,16 +65,11 @@ function Cell() {
   };
 }
 
-/* 
-** The GameController will be responsible for controlling the 
-** flow and state of the game's turns, as well as whether
-** anybody has won the game
-*/
 function GameController(
   playerOneName = "Player One",
   playerTwoName = "Player Two"
 ) {
-  const board = Gameboard();
+  const board = Gameboard();  // gets the game board
 
   const players = [
     {
@@ -84,43 +81,40 @@ function GameController(
       token: 'O'
     }
   ];
-
   let activePlayer = players[0];
 
   const switchPlayerTurn = () => {
-    activePlayer = activePlayer === players[0] ? players[1] : players[0];
+      activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
+
   const getActivePlayer = () => activePlayer;
 
   const printNewRound = () => {
     board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn. Select Square to drop token in (row,col)`);
+    console.log(`${getActivePlayer().name}'s turn. Select Square to drop token in: 0-8`);
   };
 
-  const playRound = ((row,square) => {
-    // Drop a token for the current player
-    console.log(
-      `Dropping ${getActivePlayer().name}'s token into square ${square}...`
-    );
-    //board.placeMarker(square, getActivePlayer().token);
+  const playRound = (square) => {
+      // Drop a token for the current player
+      console.log(
+        `Dropping ${getActivePlayer().name}'s token into square ${square}...`
+      );
+      if (board.isValid(square, getActivePlayer().token) == true) {
+          //call function to drop the token else tell player to pick a different tile
+          board.dropToken(square, getActivePlayer().token);
+          switchPlayerTurn();
+          printNewRound();
 
-    /*  This is where we would check for a winner and handle that logic,
-        such as a win message. */
+      }
+      else {
+          console.log("Pick a different square to play");
+      }
+      // return boolean
+      // Switch player turn
 
-    // Switch player turn
-    switchPlayerTurn();
-    printNewRound();
-  });
-
-  // Initial play game message
+  };
   printNewRound();
+  return {playRound, getActivePlayer};
+} // end GameController
 
-  // For the console version, we will only use playRound, but we will need
-  // getActivePlayer for the UI version, so I'm revealing it now
-  return {
-    playRound,
-    getActivePlayer
-  };
-}
-Gameboard(); // generate the initial board
-//const game = GameController();
+const game = GameController();
