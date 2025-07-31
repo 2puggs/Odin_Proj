@@ -3,7 +3,7 @@ function Gameboard() {
   const squares = 3;
   const board = [];
 
-
+  let seen = []; // keep track of what we've picked
   for (let i = 0; i < rows; i++) {
       board[i] = [];
       for (let j = 0; j < squares; j++) {
@@ -11,29 +11,28 @@ function Gameboard() {
           
       }
   }
-  console.log("func Gameboard()");
-  console.log(board);
 
   const printBoard = () => {
       const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue())) // gets the cell's value 
       console.log(boardWithCellValues);
   };
 
-  const isValid = (square, player) => {
-      //what is the logic to check if the value is 0? at square provided? 
-      console.log(`sqaure validation: ${square} `); // checks if the passed value matches game.playRound(sqaure);
-      for (let i=0; i < rows; i++){
-          for (let j=0; j < squares; j++) {
-              if (board[i][j] == 'X' || board[i][j] == 'O') {
-                  return false;
-              }
-          }
-
+  const isValid = (square) => {
+      console.log(`sqaure validation: ${square} `);
+      if (seen.length == 9) {
+        console.log("TIE GAME OVER");
+        return;
+      }
+      for(let i=0;i < seen.length; i++) {
+        if (seen[i] == square){
+          return false;
+        }
       }
       return true;
-  }; // end is valid;
+  }; // end isValid;
 
   const dropToken = (square,player) => {
+      seen.push(square);
       let count = 0;
       for (let i=0; i < rows; i++){
           for (let j=0; j < squares; j++) {
@@ -45,7 +44,55 @@ function Gameboard() {
           }
       }// end outer for 
   };
-  return {printBoard, isValid, dropToken};
+
+  const gameWon = (player) => {
+    //check rows
+    const playerToken = player;
+    for (let i=0; i <rows; i++) {
+      if (
+        board[i][0].getValue() === playerToken &&
+        board[i][1].getValue() === playerToken &&
+        board[i][2].getValue() === playerToken 
+      ) {
+        console.log(`${playerToken} win in row ${i}`);
+        return true;
+      }
+    }
+    //check columns 
+  for (let j = 0; j < squares; j++) {
+    if (
+      board[0][j].getValue() === playerToken &&
+      board[1][j].getValue() === playerToken &&
+      board[2][j].getValue() === playerToken
+    ) {
+      console.log(`${playerToken} wins by column ${j}`);
+      return true;
+    }
+  }
+
+  // Check main diagonal (top-left to bottom-right)
+  if (
+    board[0][0].getValue() === playerToken &&
+    board[1][1].getValue() === playerToken &&
+    board[2][2].getValue() === playerToken
+  ) {
+    console.log(`${playerToken} wins by main diagonal`);
+    return true;
+  }
+
+  // Check anti-diagonal (top-right to bottom-left)
+  if (
+    board[0][2].getValue() === playerToken &&
+    board[1][1].getValue() === playerToken &&
+    board[2][0].getValue() === playerToken
+  ) {
+    console.log(`${playerToken} wins by anti-diagonal`);
+    return true;
+  }
+
+  return false; // No winner yet
+};
+  return {printBoard, isValid, dropToken, gameWon};
 }
 
 function Cell() {
@@ -99,9 +146,14 @@ function GameController(
       console.log(
         `Dropping ${getActivePlayer().name}'s token into square ${square}...`
       );
-      if (board.isValid(square, getActivePlayer().token) == true) {
+      if (board.isValid(square)) {
           //call function to drop the token else tell player to pick a different tile
           board.dropToken(square, getActivePlayer().token);
+          //Logic for checking winner
+          if (board.gameWon(getActivePlayer().token) == true) {
+            board.printBoard();
+            return; // end the game
+          }
           switchPlayerTurn();
           printNewRound();
 
@@ -109,8 +161,6 @@ function GameController(
       else {
           console.log("Pick a different square to play");
       }
-      // return boolean
-      // Switch player turn
 
   };
   printNewRound();
@@ -118,3 +168,4 @@ function GameController(
 } // end GameController
 
 const game = GameController();
+//make player turn game.playRound('#square')
