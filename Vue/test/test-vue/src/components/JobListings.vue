@@ -4,7 +4,11 @@ import { ref, defineProps } from 'vue';
 import JobListing from './JobListing.vue';
 
 defineProps({
-    limit: Number
+    limit: Number,
+    showButton: {
+        type: Boolean,
+        deafult: false
+    }
 })
 const jobs = ref(jobData); // makes data reactive
 console.log(jobs.value); 
@@ -21,5 +25,13 @@ console.log(jobs.value);
             </div>
         </div>
    </section>
+
+   <section v-if="showButton" class="m-auto max-w-lg my-10 px-6">
+      <a
+        href="/jobs"
+        class="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+        >View All Jobs</a
+      >
+    </section>
 
 </template>
